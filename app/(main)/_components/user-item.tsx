@@ -13,7 +13,7 @@ import {
 from "@/components/ui/dropdown-menu";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 
-const UserItem = () => {
+export const UserItem = () => {
   const { user } = useUser();
 
   return (

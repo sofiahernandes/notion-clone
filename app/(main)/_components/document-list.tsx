@@ -8,7 +8,7 @@ import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { FileIcon } from "lucide-react";
-import { Item } from "./Item";
+import Item from "./Item";
 import { useQuery } from "convex/react";
 
 interface DocumentListProps {
