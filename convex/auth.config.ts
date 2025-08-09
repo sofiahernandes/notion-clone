@@ -1,10 +1,8 @@
 export default {
   providers: [
     {
-      type: "oidc",
-      issuer: "https://equal-moth-69.clerk.accounts.dev",
-      clientId: "convex",
-      jwksUri: "https://equal-moth-69.clerk.accounts.dev/.well-known/jwks.json",
+      domain: "https://enhanced-goblin-1.clerk.accounts.dev",
+      applicationID: "convex",
     },
   ],
 };
