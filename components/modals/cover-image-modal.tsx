@@ -3,7 +3,7 @@
 import { useMutation } from "convex/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { api } from "@/convex/_generated/api";
 import {
   Dialog,
@@ -52,17 +52,19 @@ const CoverImageModal = () => {
 
   return (
     <Dialog open={coverImage.isOpen} onOpenChange={coverImage.onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <h2 className="text-center text-lg font-semibold">
-            Cover Image
-          </h2>
-        </DialogHeader>
-        <SingleImageDropzone className="w-full outline-none"
-        disabled={isSubmitting}
-        value={file}
-        onChange={onChange}/>
-      </DialogContent>
+      <VisuallyHidden>
+        <DialogContent>
+          <DialogHeader>
+            <h2 className="text-center text-lg font-semibold">
+              Cover Image
+            </h2>
+          </DialogHeader>
+          <SingleImageDropzone className="w-full outline-none"
+          disabled={isSubmitting}
+          value={file}
+          onChange={onChange}/>
+        </DialogContent>
+      </VisuallyHidden>
     </Dialog>
   );
 };

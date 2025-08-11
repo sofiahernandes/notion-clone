@@ -1,5 +1,6 @@
 "use client"
 
+import { use } from 'react';
 import { useMutation, useQuery } from "convex/react";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
@@ -11,23 +12,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Toolbar } from "@/components/Toolbar";
 
 interface DocumentIdPageProps {
-  params:{
-    documentId:Id<'documents'>
-  };
-};
+  params: Promise<{
+    documentId: Id<'documents'>;
+  }>;
+}
 
 const DocumentIdPage = ({params}:DocumentIdPageProps) => {
   const Editor = useMemo(() => dynamic(() => import("@/components/Editor"),{ssr:false}),[]);
 
-  const document = useQuery(api.documents.getById,{
-    documentId:params.documentId
+  const unwrappedParams = use(params);
+  const document = useQuery(api.documents.getById, {
+    documentId: unwrappedParams.documentId,
   });
 
   const update = useMutation(api.documents.update);
 
   const onChange = (content:string) => {
     update({
-      id:params.documentId,
+      id: unwrappedParams.documentId,
       content
     });
   };
