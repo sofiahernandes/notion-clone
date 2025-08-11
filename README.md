@@ -7,7 +7,10 @@
     |
     <a href="https://github.com/sofiahernandes/notion-clone/issues">Request Feature</a>
   </p>
+  
+  <img width="1920" height="1080" alt="notion-clone" src="https://github.com/user-attachments/assets/9e8f3498-99f8-481f-af20-10a18467025b" />
 </div>
+<br/>
 
 ## 🚀 Tech Stack
 - Blocknote/core - Notion-style rich text editor
