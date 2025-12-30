@@ -7,19 +7,28 @@ import Banner from "./banner";
 import Menu from "./menu";
 import Publish from "./publish";
 import Title from "./title";
-import { getDocumentById } from "@/lib/mock-data";
+import { type DocumentSummary } from "@/types/document";
 
 interface NavbarProps {
   isCollapsed:boolean
   onResetWidth:() => void
+  documents: DocumentSummary[];
+  userName: string;
 };
 
-const Navbar = ({isCollapsed, onResetWidth}:NavbarProps) => {
+const Navbar = ({
+  isCollapsed,
+  onResetWidth,
+  documents,
+  userName,
+}: NavbarProps) => {
   const params = useParams();
   const documentId = Array.isArray(params.documentId)
     ? params.documentId[0]
     : params.documentId;
-  const document = documentId ? getDocumentById(documentId) : null;
+  const document = documentId
+    ? documents.find((item) => item.id === documentId) ?? null
+    : null;
 
   if (!document) {
     return null;
@@ -38,7 +47,7 @@ const Navbar = ({isCollapsed, onResetWidth}:NavbarProps) => {
           <Title initialData={document}/>
           <div className="flex gap-x-2 items-center">
             <Publish initialData={document}/>
-            <Menu documentId={document.id}/>
+            <Menu documentId={document.id} lastEditedBy={userName} />
           </div>
         </div>
       </nav>

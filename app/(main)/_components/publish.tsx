@@ -2,7 +2,8 @@
 
 import { toast } from "sonner";
 import { Check, Copy, Globe } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { 
@@ -11,36 +12,54 @@ import {
   PopoverContent
 } from "@/components/ui/popover";
 import { useOrigin } from "@/hooks/use-origin";
-import { MockDocument } from "@/lib/mock-data";
+import { updateDocument } from "@/lib/documents-client";
+import { type DocumentSummary } from "@/types/document";
 
 interface PublishProps {
-  initialData: MockDocument;
+  initialData: DocumentSummary;
 };
 
 const Publish = ({initialData}:PublishProps) => {
   const origin = useOrigin();
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPublished, setIsPublished] = useState(!!initialData.isPublished);
 
+  useEffect(() => {
+    setIsPublished(!!initialData.isPublished);
+  }, [initialData.isPublished]);
+
   const url = `${origin}/preview/${initialData.id}`;
 
-  const onPublish = () => {
+  const onPublish = async () => {
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      await updateDocument(initialData.id, { isPublished: true });
       setIsPublished(true);
-      setIsSubmitting(false);
       toast.success("Note published");
-    }, 400);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to publish note.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const onUnPublish = () => {
+  const onUnPublish = async () => {
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      await updateDocument(initialData.id, { isPublished: false });
       setIsPublished(false);
-      setIsSubmitting(false);
       toast("Note unpublished");
-    }, 400);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to unpublish note.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const onCopy = () => {

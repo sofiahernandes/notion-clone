@@ -13,20 +13,26 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { mockUser } from "@/lib/mock-data";
+import { updateDocument } from "@/lib/documents-client";
 	
 interface MenuProps {
   documentId: string;
+  lastEditedBy?: string;
 };
 
-const Menu = ({documentId: _documentId}:MenuProps) => {
+const Menu = ({ documentId, lastEditedBy }: MenuProps) => {
   const router = useRouter();
 
-  const onArchive = () => {
-    toast("Mock mode", {
-      description: "Delete is disabled for demo content.",
-    });
-    router.push('/documents');
+  const onArchive = async () => {
+    try {
+      await updateDocument(documentId, { isArchived: true });
+      toast.success("Moved to trash.");
+      router.push("/documents");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to move page to trash.");
+    }
   };
 
 
@@ -44,7 +50,7 @@ const Menu = ({documentId: _documentId}:MenuProps) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator/>
         <div className="text-xs text-muted-foreground p-2">
-          Last edited by: {mockUser.name}
+          Last edited by: {lastEditedBy ?? "Unknown"}
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

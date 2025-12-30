@@ -9,6 +9,7 @@ import {
   Plus,
   Trash,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -18,7 +19,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { mockUser } from "@/lib/mock-data";
+
+import { createDocument, updateDocument } from "@/lib/documents-client";
 
 interface ItemProps {
   id?: string;
@@ -31,6 +33,7 @@ interface ItemProps {
   label: string;
   onClick?: () => void;
   icon: LucideIcon;
+  lastEditedBy?: string;
 }
 
 const Item = ({
@@ -44,15 +47,27 @@ const Item = ({
   level = 0,
   onExpand,
   expanded,
+  lastEditedBy,
 }: ItemProps) => {
+  const router = useRouter();
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
-  const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onArchive = async (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
     event.stopPropagation();
     if (!id) return;
-    toast("Mock mode", {
-      description: "Delete is disabled for demo content.",
-    });
+    try {
+      await updateDocument(id, { isArchived: true });
+      toast.success("Moved to trash.");
+      if (active) {
+        router.push("/documents");
+      }
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to move page to trash.");
+    }
   };
 
   const handleExpand = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -60,15 +75,22 @@ const Item = ({
     onExpand?.();
   };
 
-  const onCreate = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onCreate = async (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
     event.stopPropagation();
     if (!id) return;
     if (!expanded) {
       onExpand?.();
     }
-    toast("Mock mode", {
-      description: "New pages are disabled for demo content.",
-    });
+    try {
+      const response = await createDocument(id);
+      router.push(`/documents/${response.id}`);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create a subpage.");
+    }
   };
 
   return (
@@ -130,7 +152,7 @@ const Item = ({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className="text-xs text-muted-foreground p-2">
-                Last edited by: {mockUser.name}
+                Last edited by: {lastEditedBy ?? "Unknown"}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -7,16 +7,24 @@ import { useParams, useRouter } from "next/navigation";
 
 import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { Input } from "@/components/ui/input";
-import { getTrashDocuments } from "@/lib/mock-data";
+import { deleteDocument, updateDocument } from "@/lib/documents-client";
+import { type DocumentSummary } from "@/types/document";
 	
-const TrashBox = () => {
+interface TrashBoxProps {
+  documents: DocumentSummary[];
+}
+
+const TrashBox = ({ documents }: TrashBoxProps) => {
   const router = useRouter();
   const params = useParams();
-  const documents = getTrashDocuments();
+  const trashDocuments = documents.filter((document) => document.isArchived);
+  const currentDocumentId = Array.isArray(params.documentId)
+    ? params.documentId[0]
+    : params.documentId;
 
   const [search, setSearch] = useState("");
 
-  const filteredDocuments = documents.filter(document => {
+  const filteredDocuments = trashDocuments.filter((document) => {
     return document.title.toLowerCase().includes(search.toLocaleLowerCase());
   });
 
@@ -24,20 +32,33 @@ const TrashBox = () => {
     router.push(`/documents/${documentId}`);
   };
 
-  const onRestore = (event:React.MouseEvent<HTMLDivElement,MouseEvent>, documentId:string) => {
+  const onRestore = async (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    documentId: string,
+  ) => {
     event.stopPropagation();
-    toast("Mock mode", {
-      description: "Restore is disabled for demo content.",
-    });
+    try {
+      await updateDocument(documentId, { isArchived: false });
+      toast.success("Page restored.");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to restore page.");
+    }
   };
 
-  const onRemove = (documentId:string) => {
-    toast("Mock mode", {
-      description: "Delete is disabled for demo content.",
-    });
-    if (params.documentId  === documentId) {
-      router.push("/documents");
-    };
+  const onRemove = async (documentId: string) => {
+    try {
+      await deleteDocument(documentId);
+      toast.success("Page deleted.");
+      if (currentDocumentId === documentId) {
+        router.push("/documents");
+      }
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete page.");
+    }
   };
 
   return (

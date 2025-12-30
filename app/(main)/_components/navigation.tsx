@@ -36,17 +36,21 @@ import TrashBox from "./trash-box";
 import { UserItem } from "./user-item";
 import { useSearch } from "@/hooks/use-search";
 import { useSettings } from "@/hooks/use-settings";
-import { mockDocuments } from "@/lib/mock-data";
+import { createDocument } from "@/lib/documents-client";
+import { type DocumentSummary, type UserSummary } from "@/types/document";
 
-const Navigation = () => {
+interface NavigationProps {
+  documents: DocumentSummary[];
+  user: UserSummary;
+}
+
+const Navigation = ({ documents, user }: NavigationProps) => {
   const router = useRouter();
   const settings = useSettings();
   const search = useSearch();
   const params = useParams();
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width:768px)");
-  const primaryDocument = mockDocuments.find((document) => !document.isArchived);
-
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<'aside'>>(null);
   const navbarRef = useRef<ElementRef<'div'>>(null);
@@ -122,13 +126,15 @@ const Navigation = () => {
     };
   };
 
-  const handleCreate = () => {
-    if (primaryDocument) {
-      router.push(`/documents/${primaryDocument.id}`);
-      return;
+  const handleCreate = async () => {
+    try {
+      const response = await createDocument();
+      router.push(`/documents/${response.id}`);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to create a new page.");
     }
-
-    toast.error("No mock documents available.");
   };
 
   return (
@@ -146,13 +152,13 @@ const Navigation = () => {
           <ChevronsLeft className="w-6 h-6"/>
         </div>
         <div>
-          <UserItem/>
+          <UserItem user={user} />
           <Item label="Search" icon={Search} isSearch onClick={search.onOpen}/>
           <Item label="Settings" icon={Settings} onClick={settings.onOpen}/>
           <Item onClick={handleCreate} label='New page' icon={PlusCircle}/>
         </div>
         <div className="mt-4">
-          <DocumentList/>
+          <DocumentList documents={documents} userName={user.name ?? "User"} />
           <Item onClick={handleCreate}
           icon={Plus}
           label="Add a page"/>
@@ -163,7 +169,7 @@ const Navigation = () => {
             <PopoverContent 
             className="p-0 w-72 " 
             side={isMobile ? "bottom" : "right"}>
-              <TrashBox/>
+              <TrashBox documents={documents} />
             </PopoverContent>
           </Popover>
         </div>
@@ -174,11 +180,16 @@ const Navigation = () => {
         </div>
       </div>
     </aside>
-    <div className={cn(`absolute top-0 z-[99999] left-60 w-[calc(100%-240px)]`,
+    <div className={cn(`absolute top-0 z-[99999] left-60 w-[calc(100%-200px)]`,
     isResetting && 'transition-all ease-in-out duration-300',
     isMobile && 'left-0 w-full')} ref={navbarRef}>
       {!!params.documentId ? (
-        <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth}/>
+        <Navbar
+          isCollapsed={isCollapsed}
+          onResetWidth={resetWidth}
+          documents={documents}
+          userName={user.name ?? "User"}
+        />
       )
     : (
       <nav className="bg-transparent px-3 py-2 w-full">

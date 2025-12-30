@@ -4,25 +4,36 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { toast } from "sonner";
+import { deleteDocument, updateDocument } from "@/lib/documents-client";
 
 interface BannerProps {
   documentId: string;
 }
 
-const Banner = ({ documentId: _documentId }: BannerProps) => {
+const Banner = ({ documentId }: BannerProps) => {
   const router = useRouter();
 
-  const onRemove = () => {
-    toast("Mock mode", {
-      description: "Delete is disabled for demo content.",
-    });
-    router.push("/documents");
+  const onRemove = async () => {
+    try {
+      await deleteDocument(documentId);
+      toast.success("Page deleted.");
+      router.push("/documents");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete page.");
+    }
   };
 
-  const onRestore = () => {
-    toast("Mock mode", {
-      description: "Restore is disabled for demo content.",
-    });
+  const onRestore = async () => {
+    try {
+      await updateDocument(documentId, { isArchived: false });
+      toast.success("Page restored.");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to restore page.");
+    }
   };
 
   return (

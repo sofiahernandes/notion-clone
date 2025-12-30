@@ -1,20 +1,29 @@
 "use client"
 
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MockDocument } from "@/lib/mock-data";
+import { updateDocument } from "@/lib/documents-client";
+import { type DocumentSummary } from "@/types/document";
 
 interface TitleProps {
-  initialData: MockDocument;
+  initialData: DocumentSummary;
 };
 
 const Title = ({initialData}:TitleProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const [title, setTitle] = useState(initialData.title || "Untitled");
   const [isEditing, setIsEditing] = useState(false);
+
+  React.useEffect(() => {
+    setTitle(initialData.title || "Untitled");
+  }, [initialData.title]);
 
   const enableInput = () => {
     setTitle(initialData.title);
@@ -25,8 +34,19 @@ const Title = ({initialData}:TitleProps) => {
     }, 0);
   };
 
-  const disableInput = () => {
+  const disableInput = async () => {
     setIsEditing(false);
+    const nextTitle = title.trim() || "Untitled";
+    if (nextTitle === initialData.title) return;
+    try {
+      await updateDocument(initialData.id, { title: nextTitle });
+      setTitle(nextTitle);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update title.");
+      setTitle(initialData.title || "Untitled");
+    }
   };
 
   const onChange = (event:React.ChangeEvent<HTMLInputElement>) => {

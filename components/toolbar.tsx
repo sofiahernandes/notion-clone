@@ -4,28 +4,38 @@ import {
   Smile, 
   X 
 } from "lucide-react";
-import React, { 
-  ElementRef, 
-  useRef, 
-  useState 
+import React, {
+  ElementRef,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
 import TextAreaAutoSize from "react-textarea-autosize";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { IconPicker } from "./icon-picker";
-import { MockDocument } from "@/lib/mock-data";
+import { updateDocument } from "@/lib/documents-client";
+import { type DocumentWithContent } from "@/types/document";
 
 interface ToolbarProps {
-  initialData: MockDocument;
+  initialData: DocumentWithContent;
   preview?:boolean
 };
 
 export function Toolbar ({initialData,preview}:ToolbarProps) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialData.title);
   const [icon, setIcon] = useState(initialData.icon);
 
   const inputRef = useRef<ElementRef<'textarea'>>(null);
+
+  useEffect(() => {
+    setValue(initialData.title);
+    setIcon(initialData.icon);
+  }, [initialData.title, initialData.icon]);
 
   const enableInput = () => {
     if (preview) return;
@@ -37,7 +47,21 @@ export function Toolbar ({initialData,preview}:ToolbarProps) {
     }, 0);
   };
 
-  const disableInput = () => setIsEditing(false);
+  const disableInput = async () => {
+    setIsEditing(false);
+    if (preview) return;
+    const nextTitle = value.trim() || "Untitled";
+    if (nextTitle === initialData.title) return;
+    try {
+      await updateDocument(initialData.id, { title: nextTitle });
+      setValue(nextTitle);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update title.");
+      setValue(initialData.title);
+    }
+  };
 
   const onInput = (value:string) => {
     setValue(value);
@@ -50,13 +74,30 @@ export function Toolbar ({initialData,preview}:ToolbarProps) {
     };
   };
 
-  const onIconSelect = (icon:string) => {
+  const onIconSelect = async (icon:string) => {
     if (preview) return;
     setIcon(icon);
+    try {
+      await updateDocument(initialData.id, { icon });
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update icon.");
+      setIcon(initialData.icon);
+    }
   };
 
-  const onRemoveIcon = () => {
+  const onRemoveIcon = async () => {
+    if (preview) return;
     setIcon(undefined);
+    try {
+      await updateDocument(initialData.id, { icon: null });
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to remove icon.");
+      setIcon(initialData.icon);
+    }
   };
 
   return (

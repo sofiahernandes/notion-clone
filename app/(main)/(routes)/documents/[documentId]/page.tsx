@@ -1,37 +1,55 @@
-"use client"
-
-import dynamic from "next/dynamic";
-import { use, useMemo } from "react";
+import { getServerSession } from "next-auth";
+import { notFound, redirect } from "next/navigation";
 
 import { Cover } from "@/components/cover";
 import { Toolbar } from "@/components/toolbar";
-import { getDocumentById } from "@/lib/mock-data";
+import DocumentEditor from "@/components/document-editor";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface DocumentIdPageProps {
-  params: Promise<{
+  params: {
     documentId: string;
-  }>;
+  };
 }
 
-const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
-  const Editor = useMemo(
-    () => dynamic(() => import("@/components/editor"), { ssr: false }),
-    [],
-  );
+const DocumentIdPage = async ({ params }: DocumentIdPageProps) => {
+  const session = await getServerSession(authOptions);
 
-  const resolvedParams = use(params);
-  const document = getDocumentById(resolvedParams.documentId);
+  if (!session?.user?.id) {
+    redirect("/");
+  }
+
+  const document = await prisma.document.findFirst({
+    where: {
+      id: params.documentId,
+      userId: session.user.id,
+    },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      icon: true,
+      coverImage: true,
+      parentId: true,
+      isArchived: true,
+      isPublished: true,
+    },
+  });
 
   if (!document) {
-    return <div>Not Found</div>;
+    notFound();
   }
 
   return (
     <div className="pb-40">
-      <Cover url={document.coverImage} />
+      <Cover url={document.coverImage ?? undefined} documentId={document.id} />
       <div className="md:max-w-3xl lg:md-max-w-4xl mx-auto">
         <Toolbar initialData={document} />
-        <Editor onChange={() => undefined} initialContent={document.content} />
+        <DocumentEditor
+          documentId={document.id}
+          initialContent={document.content}
+        />
       </div>
     </div>
   );
