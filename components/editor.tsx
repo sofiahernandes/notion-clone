@@ -11,7 +11,7 @@ import { useEdgeStore } from "@/lib/edgestore";
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
 
-interface EditorProps {
+export interface EditorProps {
   onChange: (value: string) => void;
   initialContent?: string;
   editable?: boolean;
@@ -47,6 +47,7 @@ const Editor = ({ initialContent, onChange, editable = true }: EditorProps) => {
         editor={editor}
         theme={resolvedTheme === "dark" ? "dark" : "light"}
         editable={editable}
+        className="bn-no-bg z-[999999]"
         onChange={() => {
           if (!editable) return;
           onChange(JSON.stringify(editor.document));

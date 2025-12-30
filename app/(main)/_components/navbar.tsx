@@ -36,7 +36,7 @@ const Navbar = ({
 
   return (
     <>
-      <nav className="bg-background dark:bg-[#1F1F1F] px-3 py-2 w-full
+      <nav className="bg-background dark:bg-secondary/70 px-3 py-2 w-full
       flex gap-x-4 items-center">
         {isCollapsed && (
           <MenuIcon className="w-6 h-6 text-muted-foreground" role="button"

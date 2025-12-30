@@ -8,6 +8,14 @@ body,
   height: 100%;
 }
 
+.bn-container.bn-no-bg {
+  --bn-colors-editor-background: transparent;
+}
+
+.bn-container.bn-no-bg .bn-editor {
+  background-color: transparent;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -54,7 +62,7 @@ body,
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
  
-    --secondary: 0 0% 14.9%;
+    --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 98%;
  
     --muted: 0 0% 14.9%;

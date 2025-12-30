@@ -17,6 +17,8 @@
 - Next.js – Full-stack React framework
 - Tailwind CSS – Utility-first styling
 - Edge Store – File uploads
+- NextAuth (Google) – Authentication
+- Prisma + SQLite – Document data store
 - Zustand – State management
 - Zod – Type-safe validation
 
@@ -24,12 +26,13 @@
 📝 Notion-style block editor  
 🧾 Infinite nested documents  
 🗑️ Trash bin with soft delete & recovery  
-📁 Create, upload, and delete files  
+📁 Upload cover images to Edge Store  
 🖼️ Customizeble cover image per document  
 📎 Custom icons for documents, with real-time updates  
 📂 Expandable and collapsible sidebar navigation  
 📱 Fully responsive (mobile + desktop)  
-🧪 Mocked data for demo mode  
+🔐 Google sign-in with user workspaces  
+📤 Publish pages with shareable links  
 <br/>
 
 ## 🛠️ Getting Started
@@ -56,9 +59,23 @@ yarn install
 # Edge Store (file upload)
 EDGE_STORE_ACCESS_KEY=""
 EDGE_STORE_SECRET_KEY=""
+
+# Auth
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET=""
+
+# Database
+DATABASE_URL="file:./dev.db"
 ```
 
-4. Start the Development Server
+5. Run database migrations
+```
+npx prisma migrate dev --name init
+```
+
+6. Start the Development Server
 ```
 npm run dev
 # or

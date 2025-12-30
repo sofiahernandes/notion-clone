@@ -139,7 +139,7 @@ const Navigation = ({ documents, user }: NavigationProps) => {
 
   return (
     <>
-    <aside className={cn(`group/sidebar h-full bg-secondary overflow-y-auto relative flex flex-col w-60 z-[99999]`,
+    <aside className={cn(`group/sidebar h-full bg-secondary overflow-y-auto relative flex flex-col w-60 z-50`,
     isResetting && 'transition-all ease-in-out duration-300',
     isMobile && 'w-0')}
     ref={sidebarRef}>
@@ -180,7 +180,7 @@ const Navigation = ({ documents, user }: NavigationProps) => {
         </div>
       </div>
     </aside>
-    <div className={cn(`absolute top-0 z-[99999] left-60 w-[calc(100%-200px)]`,
+    <div className={cn(`absolute top-0 z-50 left-60 w-[calc(100%-200px)]`,
     isResetting && 'transition-all ease-in-out duration-300',
     isMobile && 'left-0 w-full')} ref={navbarRef}>
       {!!params.documentId ? (

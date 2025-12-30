@@ -1,10 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-import Editor from "@/components/editor";
+import type { EditorProps } from "@/components/editor";
 import { updateDocument } from "@/lib/documents-client";
+
+const Editor = dynamic<EditorProps>(() => import("@/components/editor"), {
+  ssr: false,
+});
 
 interface DocumentEditorProps {
   documentId: string;

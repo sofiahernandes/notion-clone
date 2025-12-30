@@ -44,7 +44,7 @@ export default async function MainLayout ({
   };
 
   return (
-    <div className="h-full flex dark:bg-[#1F1F1F]">
+    <div className="h-full flex dark:bg-secondary/70">
       <Navigation documents={documents} user={user} />
       <main className="flex-1 h-full overflow-y-auto">
         <SearchCommand documents={documents} user={user} />
