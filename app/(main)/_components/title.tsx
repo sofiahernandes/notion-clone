@@ -26,6 +26,7 @@ const Title = ({initialData}:TitleProps) => {
   }, [initialData.title]);
 
   const enableInput = () => {
+    if (initialData.isArchived) return;
     setTitle(initialData.title);
     setIsEditing(true);
     setTimeout(() => {
@@ -36,6 +37,7 @@ const Title = ({initialData}:TitleProps) => {
 
   const disableInput = async () => {
     setIsEditing(false);
+    if (initialData.isArchived) return;
     const nextTitle = title.trim() || "Untitled";
     if (nextTitle === initialData.title) return;
     try {
@@ -64,9 +66,16 @@ const Title = ({initialData}:TitleProps) => {
       {!!initialData.icon && <p>{initialData.icon}</p>}
       {isEditing ? (
         <Input className="h-7 px-2 focus-visible:ring-transparent" ref={inputRef}
-        onClick={enableInput} onBlur={disableInput} value={title} onChange={onChange} onKeyDown={onKeyDown}/>
+        onClick={enableInput} onBlur={disableInput} value={title} onChange={onChange} onKeyDown={onKeyDown}
+        disabled={initialData.isArchived}/>
       ) : (
-        <Button className="font-normal h-auto p-1" variant='ghost' size='sm' onClick={enableInput}>
+        <Button
+          className="font-normal h-auto p-1"
+          variant='ghost'
+          size='sm'
+          onClick={enableInput}
+          disabled={initialData.isArchived}
+        >
           <span className="truncate">
             {title}
           </span>

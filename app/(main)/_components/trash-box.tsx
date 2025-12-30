@@ -70,9 +70,11 @@ const TrashBox = ({ documents }: TrashBoxProps) => {
          placeholder="Filter by page title..."/>
       </div>
       <div className="mt-2 px-1 pb-1">
-        <p className="hidden last:block text-xs text-center text-muted-foreground pb-2">
-          No documents here
-        </p>
+        {filteredDocuments.length === 0 && (
+          <p className="text-xs text-center text-muted-foreground pb-2">
+            No documents here
+          </p>
+        )}
         {filteredDocuments.map(document => (
           <div className="text-sm rounded-sm w-full hover:bg-primary/5 flex justify-between items-center text-primary"
           key={document.id} role="button" onClick={() => onClick(document.id)}

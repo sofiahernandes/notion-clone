@@ -3,10 +3,28 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
 const Heading = () => {
-  const onSignIn = () => {
-    void signIn("google", { callbackUrl: "/documents" });
+  const onSignIn = async () => {
+    try {
+      const response = await signIn("google", {
+        callbackUrl: "/documents",
+        redirect: false,
+      });
+
+      if (response?.error) {
+        toast.error("Sign-in failed. Check server logs for details.");
+        return;
+      }
+
+      if (response?.url) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Sign-in failed. Check server logs for details.");
+    }
   };
 
   return (

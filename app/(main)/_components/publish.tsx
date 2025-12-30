@@ -33,6 +33,10 @@ const Publish = ({initialData}:PublishProps) => {
   const url = `${origin}/preview/${initialData.id}`;
 
   const onPublish = async () => {
+    if (initialData.isArchived) {
+      toast.error("Restore the page before publishing.");
+      return;
+    }
     setIsSubmitting(true);
     try {
       await updateDocument(initialData.id, { isPublished: true });
@@ -48,6 +52,10 @@ const Publish = ({initialData}:PublishProps) => {
   };
 
   const onUnPublish = async () => {
+    if (initialData.isArchived) {
+      toast.error("Restore the page before unpublishing.");
+      return;
+    }
     setIsSubmitting(true);
     try {
       await updateDocument(initialData.id, { isPublished: false });
@@ -74,7 +82,7 @@ const Publish = ({initialData}:PublishProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size='sm' variant='ghost'>
+        <Button size='sm' variant='ghost' disabled={initialData.isArchived}>
           Publish
           {isPublished && <Globe className="text-sky-500 w-4 h-4 ml-2"/>}
         </Button>

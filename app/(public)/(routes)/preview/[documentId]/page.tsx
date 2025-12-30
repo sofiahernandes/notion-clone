@@ -37,7 +37,7 @@ const DocumentIdPage = async ({ params }: DocumentIdPageProps) => {
   return (
     <div className="pb-40">
       <Cover preview url={document.coverImage ?? undefined} />
-      <div className="md:max-w-3xl lg:md-max-w-4xl mx-auto">
+      <div className="md:max-w-4xl lg:md-max-w-5xl">
         <Toolbar preview initialData={document} />
         <DocumentEditor
           documentId={document.id}

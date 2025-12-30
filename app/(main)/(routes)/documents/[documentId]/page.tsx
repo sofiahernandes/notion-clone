@@ -41,14 +41,21 @@ const DocumentIdPage = async ({ params }: DocumentIdPageProps) => {
     notFound();
   }
 
+  const isArchived = document.isArchived;
+
   return (
     <div className="pb-40">
-      <Cover url={document.coverImage ?? undefined} documentId={document.id} />
-      <div className="md:max-w-3xl lg:md-max-w-4xl mx-auto">
-        <Toolbar initialData={document} />
+      <Cover
+        url={document.coverImage ?? undefined}
+        documentId={document.id}
+        preview={isArchived}
+      />
+      <div className="md:max-w-4xl lg:md-max-w-5xl">
+        <Toolbar initialData={document} preview={isArchived} />
         <DocumentEditor
           documentId={document.id}
           initialContent={document.content}
+          editable={!isArchived}
         />
       </div>
     </div>

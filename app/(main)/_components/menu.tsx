@@ -18,12 +18,14 @@ import { updateDocument } from "@/lib/documents-client";
 interface MenuProps {
   documentId: string;
   lastEditedBy?: string;
+  isArchived?: boolean;
 };
 
-const Menu = ({ documentId, lastEditedBy }: MenuProps) => {
+const Menu = ({ documentId, lastEditedBy, isArchived }: MenuProps) => {
   const router = useRouter();
 
   const onArchive = async () => {
+    if (isArchived) return;
     try {
       await updateDocument(documentId, { isArchived: true });
       toast.success("Moved to trash.");
@@ -44,7 +46,7 @@ const Menu = ({ documentId, lastEditedBy }: MenuProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60" align="end" alignOffset={8} forceMount>
-        <DropdownMenuItem onClick={onArchive}>
+        <DropdownMenuItem onClick={onArchive} disabled={isArchived}>
           <Trash className="w-4 h-4 mr-2"/>
           Delete
         </DropdownMenuItem>

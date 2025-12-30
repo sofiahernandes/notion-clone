@@ -24,7 +24,8 @@ const Editor = ({ initialContent, onChange, editable = true }: EditorProps) => {
   const parsedContent = (() => {
     if (!initialContent) return undefined;
     try {
-      return JSON.parse(initialContent) as PartialBlock[];
+      const parsed = JSON.parse(initialContent) as PartialBlock[];
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : undefined;
     } catch {
       return undefined;
     }

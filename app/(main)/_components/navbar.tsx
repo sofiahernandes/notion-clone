@@ -47,7 +47,11 @@ const Navbar = ({
           <Title initialData={document}/>
           <div className="flex gap-x-2 items-center">
             <Publish initialData={document}/>
-            <Menu documentId={document.id} lastEditedBy={userName} />
+            <Menu
+              documentId={document.id}
+              lastEditedBy={userName}
+              isArchived={document.isArchived}
+            />
           </div>
         </div>
       </nav>

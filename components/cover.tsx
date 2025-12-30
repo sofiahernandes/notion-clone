@@ -39,7 +39,7 @@ const Cover = ({url,preview = false, documentId}:CoverProps) => {
         <Image className="object-cover" src={url} alt='Cover' fill/>
       )}
       {!preview && documentId && (
-        <div className="opacity-0 group-hover:opacity-100 absolute bottom-4 right-4 flex gap-x-2">
+        <div className="opacity-0 group-hover:opacity-100 absolute -bottom-16 right-4 flex gap-x-2">
           <Button
             size="sm"
             variant="outline"
